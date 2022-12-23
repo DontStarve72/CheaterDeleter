@@ -68,7 +68,7 @@ public class MathUtil {
                 cameraPos,
                 endPos,
                 box,
-                entityx -> !entityx.isSpectator() && entityx.collides(),
+                entityx -> !entityx.isSpectator() && entityx.noClip, // TODO: entityx.collides was removed in 1.19. I replaced it with entityx.noClip. I'm not sure if these are the same boolean as entities like the ender dragon and vex have noclip
                 extendedReach
         );
 

@@ -2,9 +2,11 @@ package io.github.coolmineman.cheaterdeleter.mixin;
 
 import com.mojang.datafixers.util.Pair;
 
+import com.mojang.logging.LogUtils;
+import net.minecraft.network.PacketCallbacks;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,8 +18,6 @@ import io.github.coolmineman.cheaterdeleter.CheaterDeleterThread;
 import io.github.coolmineman.cheaterdeleter.events.OutgoingPacketListener;
 import io.github.coolmineman.cheaterdeleter.objects.entity.CDPlayer;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.PacketListener;
@@ -27,9 +27,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 public class ClientConnectionMixin {
     @Shadow
     private PacketListener packetListener;
-    @Shadow
-    @Final
-    private static Logger LOGGER;
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     @Inject(method = "channelRead0", at = @At("HEAD"), cancellable = true)
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Packet packet, CallbackInfo cb) {
@@ -39,7 +37,7 @@ public class ClientConnectionMixin {
     }
 
     @Inject(method = "sendImmediately", at = @At("HEAD"))
-    private void sendImmediately(Packet packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback, CallbackInfo cb) {
+    private void sendImmediately(Packet packet, @Nullable PacketCallbacks callbacks, CallbackInfo ci) {
         if (packetListener instanceof ServerPlayNetworkHandler) {
             OutgoingPacketListener.EVENT.invoker().onOutgoingPacket(CDPlayer.of(((ServerPlayNetworkHandler)packetListener).player), packet);
         }

@@ -8,20 +8,16 @@ import org.jetbrains.annotations.Nullable;
 import io.github.coolmineman.cheaterdeleter.LoggerThread;
 import io.github.coolmineman.cheaterdeleter.compat.CompatManager;
 import io.github.coolmineman.cheaterdeleter.compat.LuckoPermissionsCompat;
-import io.github.coolmineman.cheaterdeleter.compat.StepHeightEntityAttributeCompat;
 import io.github.coolmineman.cheaterdeleter.modules.CDModule;
 import io.github.coolmineman.cheaterdeleter.objects.PlayerMoveC2SPacketView;
 import io.github.coolmineman.cheaterdeleter.config.GlobalConfig;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.network.MessageType;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.BannedPlayerList;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
 public interface CDPlayer extends CDEntity {
@@ -49,7 +45,7 @@ public interface CDPlayer extends CDEntity {
         ex.flags += amount;
         ex.lastFlag = System.currentTimeMillis();
         if (ex.flags > 16) {
-            kick(new LiteralText("Flagged Too Much by AC"));
+            kick(Text.literal("Flagged Too Much by AC"));
         }
     }
 
@@ -143,16 +139,6 @@ public interface CDPlayer extends CDEntity {
         asMcPlayer().teleport(getWorld(), x, y, z, yaw, pitch);
     }
 
-    @Override
-    default float getStepHeight() {
-        StepHeightEntityAttributeCompat compat = CompatManager.getCompatHolder(StepHeightEntityAttributeCompat.class).compat;
-        if (compat == null) {
-            return 0.6f;
-        } else {
-            return compat.getStepHeightAddition(asMcPlayer()) + 0.6f;
-        }
-    }
-
     default void setPacketPos(PlayerMoveC2SPacketView packet) {
         CDPlayerEx ex = getData(CDPlayerEx.class);
         if (packet.isChangePosition()) {
@@ -199,7 +185,7 @@ public interface CDPlayer extends CDEntity {
 
     default void kick(Text text) {
         if (GlobalConfig.getDebugMode() >= 2) {
-            asMcPlayer().sendMessage(new LiteralText("Kicked: ").append(text), MessageType.SYSTEM, Util.NIL_UUID);
+            asMcPlayer().sendMessage(Text.literal("Kicked: ").append(text));
             CDPlayerEx ex = getData(CDPlayerEx.class);
             ex.flags = 0;
         } else {
@@ -209,7 +195,7 @@ public interface CDPlayer extends CDEntity {
 
     default void ban(int hours, String reason) {
         if (GlobalConfig.getDebugMode() >= 2) {
-            asMcPlayer().sendMessage(new LiteralText("Banned: " + reason), MessageType.SYSTEM, Util.NIL_UUID);
+            asMcPlayer().sendMessage(Text.literal("Banned: " + reason));
             CDPlayerEx ex = getData(CDPlayerEx.class);
             ex.flags = 0;
         } else {
@@ -224,7 +210,7 @@ public interface CDPlayer extends CDEntity {
             }
 
             bannedPlayerList.add(entry);
-            asMcPlayer().networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.banned"));
+            asMcPlayer().networkHandler.disconnect(Text.translatable("multiplayer.disconnect.banned"));
         }
     }
 
@@ -237,7 +223,7 @@ public interface CDPlayer extends CDEntity {
     }
 
     default String asString() {
-        return String.format(Locale.ROOT, "Player['%s'/%s, w='%s', x=%.2f, y=%.2f, z=%.2f]", asMcPlayer().getName().asString(), this.getUuid().toString(), this.getWorld() == null ? "~NULL~" : this.getWorld().getRegistryKey().getValue().toString(), this.getX(), this.getY(), this.getZ());
+        return String.format(Locale.ROOT, "Player['%s'/%s, w='%s', x=%.2f, y=%.2f, z=%.2f]", asMcPlayer().getName().getString(), this.getUuid().toString(), this.getWorld() == null ? "~NULL~" : this.getWorld().getRegistryKey().getValue().toString(), this.getX(), this.getY(), this.getZ());
     }
 
     default ServerPlayerEntity asMcPlayer() {

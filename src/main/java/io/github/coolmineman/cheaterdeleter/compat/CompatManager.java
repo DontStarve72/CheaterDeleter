@@ -14,7 +14,6 @@ public class CompatManager {
     private static final HashMap<Class<? extends Compat>, CompatHolder<? extends Compat>> COMPATS = new HashMap<>();
 
     public static void init() {
-        compat(StepHeightEntityAttributeCompat::new, "step-height-entity-attribute", "Step Height Entity Attribute Library", StepHeightEntityAttributeCompat.class);
         compat(LuckoPermissionsCompat::new, "fabric-permissions-api-v0", "fabric-permissions-api (Permissions Support)", LuckoPermissionsCompat.class);
     }
 

@@ -10,7 +10,7 @@
     "PlayerPositionLookS2CPacketMixin",
     "EntityPositionS2CPacketMixin",
     "EntityMixin",
-    "HorseBaseEntityMixin",
+    "AbstractHorseEntityMixin",
     "VehicleMoveS2CPacketMixin",
     "WorldChunkMixin",
     "ServerPlayNetworkHandlerAccessor",

@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.10-SNAPSHOT'
+	id 'fabric-loom' version '1.0-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -31,9 +31,8 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modImplementation("com.github.emilyploszaj:step-height-entity-attribute:8f33b4f9e73d8008fc6792dcdb7e27a4c9e70b7b") { transitive = false }
-	modImplementation("me.lucko:fabric-permissions-api:0.1-SNAPSHOT") { transitive = false }
 
+	modImplementation("me.lucko:fabric-permissions-api:0.1-SNAPSHOT") { transitive = false }
 	modImplementation("io.github.coolmineman:nestedtext:0.5")
 	include("io.github.coolmineman:nestedtext:0.5")
 
@@ -59,13 +58,8 @@ tasks.withType(JavaCompile).configureEach {
 	// If Javadoc is generated, this must be specified in that task too.
 	it.options.encoding = "UTF-8"
 
-	// The Minecraft launcher currently installs Java 8 for users, so your mod probably wants to target Java 8 too
-	// JDK 9 introduced a new way of specifying this that will make sure no newer classes or methods are used.
-	// We'll use that if it's available, but otherwise we'll use the older option.
-	def targetVersion = 8
-	if (JavaVersion.current().isJava9Compatible()) {
-		 it.options.release = targetVersion
-	}
+	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
+	it.options.release = 17
 }
 
 java {
