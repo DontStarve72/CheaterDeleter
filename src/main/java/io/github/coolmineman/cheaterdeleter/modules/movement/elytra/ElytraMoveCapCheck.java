@@ -6,7 +6,6 @@ import io.github.coolmineman.cheaterdeleter.events.PlayerMovementListener;
 import io.github.coolmineman.cheaterdeleter.modules.CDModule;
 import io.github.coolmineman.cheaterdeleter.objects.PlayerMoveC2SPacketView;
 import io.github.coolmineman.cheaterdeleter.objects.entity.CDPlayer;
-import io.github.coolmineman.cheaterdeleter.util.PunishUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
@@ -41,7 +40,7 @@ public class ElytraMoveCapCheck extends CDModule implements ClientCommandC2SPack
             } else if (packet.isChangePosition() && data.isActive) {
                 if (packet.getY() > data.yCap) {
                     flag(player, FlagSeverity.MINOR, "Elytra Too High " + (packet.getY() - data.yCap));
-                    PunishUtil.groundPlayer(player);
+                    player.groundRollback();
                 } else if (System.currentTimeMillis() - data.lastUpdate >= 1000) {
                     data.yCap -= 1.5;
                     data.lastUpdate = System.currentTimeMillis();

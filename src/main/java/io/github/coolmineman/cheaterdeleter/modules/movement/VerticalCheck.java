@@ -6,7 +6,6 @@ import io.github.coolmineman.cheaterdeleter.modules.CDModule;
 import io.github.coolmineman.cheaterdeleter.objects.PlayerMoveC2SPacketView;
 import io.github.coolmineman.cheaterdeleter.objects.entity.CDPlayer;
 import io.github.coolmineman.cheaterdeleter.util.BlockCollisionUtil;
-import io.github.coolmineman.cheaterdeleter.util.PunishUtil;
 import net.minecraft.entity.damage.DamageSource;
 
 public class VerticalCheck extends CDModule implements PlayerMovementListener, PlayerDamageListener {
@@ -34,7 +33,8 @@ public class VerticalCheck extends CDModule implements PlayerMovementListener, P
             }
         } else { //Packet off ground
             if (verticalCheckData.isActive && packet.isChangePosition() && packet.getY() > verticalCheckData.maxY) {
-                if (flag(player, FlagSeverity.MINOR, "Failed Vertical Movement Check " + (verticalCheckData.maxY - packet.getY()))) PunishUtil.groundPlayer(player);
+                // if (flag(player, FlagSeverity.MINOR, "Failed Vertical Movement Check " + (verticalCheckData.maxY - packet.getY()))) PunishUtil.groundPlayer(player);
+                if (flag(player, FlagSeverity.MINOR, "Failed Vertical Movement Check " + (verticalCheckData.maxY - packet.getY()))) player.groundRollback();
             }
             if (!verticalCheckData.isActive && player.getVelocity().getY() < 0.45) {
                 verticalCheckData.maxY = player.getY() + player.getMaxJumpHeight();

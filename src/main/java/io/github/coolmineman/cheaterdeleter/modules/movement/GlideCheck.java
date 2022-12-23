@@ -8,7 +8,6 @@ import io.github.coolmineman.cheaterdeleter.modules.CDModule;
 import io.github.coolmineman.cheaterdeleter.objects.PlayerMoveC2SPacketView;
 import io.github.coolmineman.cheaterdeleter.objects.entity.CDPlayer;
 import io.github.coolmineman.cheaterdeleter.util.BlockCollisionUtil;
-import io.github.coolmineman.cheaterdeleter.util.PunishUtil;
 import net.minecraft.entity.damage.DamageSource;
 
 public class GlideCheck extends CDModule implements PlayerMovementListener, PlayerDamageListener {
@@ -53,7 +52,8 @@ public class GlideCheck extends CDModule implements PlayerMovementListener, Play
         if (failamount > 0.3) {
             flag(player, FlagSeverity.MINOR, "Failed Glide Check (Minor) " + failamount);
         } else {
-            if (flag(player, FlagSeverity.MAJOR, "Failed Glide Check " + failamount)) PunishUtil.groundPlayer(player);
+            // if (flag(player, FlagSeverity.MAJOR, "Failed Glide Check " + failamount)) PunishUtil.groundPlayer(player);
+            if (flag(player, FlagSeverity.MAJOR, "Failed Glide Check " + failamount)) player.groundRollback();
         }
     }
 

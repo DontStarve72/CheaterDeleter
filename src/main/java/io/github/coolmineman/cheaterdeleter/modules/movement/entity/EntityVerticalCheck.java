@@ -9,7 +9,6 @@ import io.github.coolmineman.cheaterdeleter.objects.entity.CDEntity;
 import io.github.coolmineman.cheaterdeleter.objects.entity.CDPlayer;
 import io.github.coolmineman.cheaterdeleter.util.BlockCollisionUtil;
 import io.github.coolmineman.cheaterdeleter.util.CollisionUtil;
-import io.github.coolmineman.cheaterdeleter.util.PunishUtil;
 import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.util.math.Box;
@@ -59,7 +58,7 @@ public class EntityVerticalCheck extends CDModule implements VehicleMoveListener
                 if (verticalCheckData.isActive && vehicleMoveC2SPacket.getY() > verticalCheckData.maxY) {
                     if (flag(player, FlagSeverity.MAJOR,
                             "Failed Entity Vertical Movement Check " + (verticalCheckData.maxY - vehicleMoveC2SPacket.getY())))
-                        PunishUtil.groundBoat(player, vehicle);
+                        player.groundBoat(vehicle);
                 }
                 if (!verticalCheckData.isActive && vehicle.getVelocity().getY() < 0.45) {
                     verticalCheckData.maxY = vehicle.getY() + vehicle.getMaxJumpHeight();

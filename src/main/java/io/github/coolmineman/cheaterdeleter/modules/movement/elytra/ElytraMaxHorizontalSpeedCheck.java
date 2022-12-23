@@ -5,7 +5,6 @@ import io.github.coolmineman.cheaterdeleter.modules.CDModule;
 import io.github.coolmineman.cheaterdeleter.objects.PlayerMoveC2SPacketView;
 import io.github.coolmineman.cheaterdeleter.objects.entity.CDPlayer;
 import io.github.coolmineman.cheaterdeleter.util.MathUtil;
-import io.github.coolmineman.cheaterdeleter.util.PunishUtil;
 
 public class ElytraMaxHorizontalSpeedCheck extends CDModule implements PlayerMovementListener {
     public ElytraMaxHorizontalSpeedCheck() {
@@ -33,8 +32,7 @@ public class ElytraMaxHorizontalSpeedCheck extends CDModule implements PlayerMov
         data.move += distance;
         if (System.currentTimeMillis() - data.starttime > 2500) {
             if (data.move >= 150 && flag(player, FlagSeverity.MINOR, "Elytra Move Too High: " + data.move)) {
-                player.rollback();
-                PunishUtil.groundPlayer(player);
+                player.groundRollback();
             }
             data.starttime = System.currentTimeMillis();
             data.move = 0.0;

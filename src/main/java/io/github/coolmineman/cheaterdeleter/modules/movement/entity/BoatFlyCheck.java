@@ -8,7 +8,6 @@ import io.github.coolmineman.cheaterdeleter.objects.PlayerMoveC2SPacketView;
 import io.github.coolmineman.cheaterdeleter.objects.entity.CDEntity;
 import io.github.coolmineman.cheaterdeleter.objects.entity.CDPlayer;
 import io.github.coolmineman.cheaterdeleter.util.BlockCollisionUtil;
-import io.github.coolmineman.cheaterdeleter.util.PunishUtil;
 import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.util.math.Box;
@@ -32,7 +31,7 @@ public class BoatFlyCheck extends CDModule implements VehicleMoveListener {
             Box box = vehicle.getBoxForPosition(vehicleMoveC2SPacket.getX(), vehicleMoveC2SPacket.getY(), vehicleMoveC2SPacket.getZ());
             if (vehicle.getStepHeight() == 0 && ydelta > 0 && vehicle.getVelocity().getY() <= 0) {
                 if (assertOrFlag(player.getWorld().getTime() - vehicle.getPistonMovementTick() < 1000 || BlockCollisionUtil.isTouching(box, player.getWorld(), BlockCollisionUtil.LIQUID), player, FlagSeverity.MAJOR, "Boat Fly " + ydelta + " " + vehicle.getVelocity().getY()))
-                    PunishUtil.groundBoat(player, vehicle);
+                    player.groundBoat(vehicle);
             }
         }
 

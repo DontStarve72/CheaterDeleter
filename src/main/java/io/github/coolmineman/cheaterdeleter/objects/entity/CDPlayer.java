@@ -3,6 +3,13 @@ package io.github.coolmineman.cheaterdeleter.objects.entity;
 import java.util.Date;
 import java.util.Locale;
 
+import io.github.coolmineman.cheaterdeleter.util.BlockCollisionUtil;
+import io.github.coolmineman.cheaterdeleter.util.BoxUtil;
+import net.minecraft.block.BlockState;
+import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import io.github.coolmineman.cheaterdeleter.LoggerThread;
@@ -105,6 +112,29 @@ public interface CDPlayer extends CDEntity {
             ex.lastGoodZ = z;
             ex.hasLastGood = true;
         }
+    }
+
+    default void groundRollback() {
+        CDPlayerEx ex = getData(CDPlayerEx.class);
+        Box box = BoxUtil.withNewMinY(this.getBoxForPosition(ex.lastGoodX, this.getY(), ex.lastGoodZ), 0);
+        World world = this.getWorld();
+        double newY = BlockPos.stream(box).mapToDouble(pos -> BlockCollisionUtil.getHighestTopIntersection(world.getBlockState(pos).getCollisionShape(world, pos).offset(pos.getX(), pos.getY(), pos.getZ()), box, -100)).max().orElse(-100);
+        this.teleportCd(ex.lastGoodX, newY, ex.lastGoodZ);
+    }
+
+    default void groundBoat(CDEntity entity) {
+        Box box = BoxUtil.withNewMinY(entity.getBox(), 0);
+        World world = entity.getWorld();
+        double newY = BlockPos.stream(box).mapToDouble(
+                pos -> {
+                    BlockState state = world.getBlockState(pos);
+                    if (!state.getFluidState().isEmpty()) return pos.getY() + 1;
+                    if (state.getMaterial().isLiquid()) return pos.getY() + 1;
+                    return BlockCollisionUtil.getHighestTopIntersection(state.getCollisionShape(world, pos).offset(pos.getX(), pos.getY(), pos.getZ()), box, -100);
+                }
+        ).max().orElse(-100);
+        entity.asMcEntity().setPos(entity.getX(), newY, entity.getZ());
+        this.getNetworkHandler().sendPacket(new VehicleMoveS2CPacket(entity.asMcEntity()));
     }
 
     default TriState getPermission(String permission) {
