@@ -1,6 +1,7 @@
 package io.github.coolmineman.cheaterdeleter.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,21 +21,11 @@ public class PlayerInteractEntityC2SPacketMixin implements PlayerInteractEntityC
     @Inject(method = "<init>(Lnet/minecraft/network/PacketByteBuf;)V", at = @At("RETURN"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void iHateThisHack(PacketByteBuf buf, CallbackInfo bruh, @Coerce Enum interactType) {
         type = PlayerInteractEntityC2SPacketView.InteractType.ALL[interactType.ordinal()];
-    } 
-
-    @Override
-    public Entity getEntity(ServerWorld world) {
-        return ((PlayerInteractEntityC2SPacket)(Object)(this)).getEntity(world);
     }
 
     @Override
-    public InteractType type() {
+    public InteractType getType() {
         return type;
-    }
-
-    @Override
-    public boolean isPlayerSneaking() {
-        return ((PlayerInteractEntityC2SPacket)(Object)(this)).isPlayerSneaking();
     }
     
 }

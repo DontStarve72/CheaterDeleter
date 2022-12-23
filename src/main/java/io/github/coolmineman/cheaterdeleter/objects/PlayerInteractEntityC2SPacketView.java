@@ -4,9 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 
 public interface PlayerInteractEntityC2SPacketView {
-    Entity getEntity(ServerWorld world);
-    InteractType type();
-    boolean isPlayerSneaking();
+    InteractType getType();
 
     enum InteractType {
         INTERACT,
