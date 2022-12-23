@@ -8,11 +8,11 @@ import io.github.coolmineman.cheaterdeleter.events.OutgoingTeleportListener;
 import io.github.coolmineman.cheaterdeleter.events.PlayerEndTickCallback;
 import io.github.coolmineman.cheaterdeleter.modules.CDModule;
 import io.github.coolmineman.cheaterdeleter.objects.PlayerMoveC2SPacketView;
-import io.github.coolmineman.cheaterdeleter.objects.PlayerPositionLookS2CPacketView;
 import io.github.coolmineman.cheaterdeleter.objects.entity.CDPlayer;
 import io.github.coolmineman.cheaterdeleter.trackers.Trackers;
 import io.github.coolmineman.cheaterdeleter.util.BlockCollisionUtil;
 import io.github.coolmineman.cheaterdeleter.util.MathUtil;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.util.math.Box;
 
 //TODO This is garbage
@@ -72,7 +72,7 @@ public class SpeedCheck extends CDModule implements PlayerMovementListener, Play
     }
 
     @Override
-    public void onOutgoingTeleport(CDPlayer player, PlayerPositionLookS2CPacketView packet) {
+    public void onOutgoingTeleport(CDPlayer player, PlayerPositionLookS2CPacket packet) {
         player.getOrCreateData(SpeedCheckData.class, SpeedCheckData::new).distance.set(0);
     }
 }

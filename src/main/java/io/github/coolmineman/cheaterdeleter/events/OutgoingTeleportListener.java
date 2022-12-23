@@ -1,6 +1,5 @@
 package io.github.coolmineman.cheaterdeleter.events;
 
-import io.github.coolmineman.cheaterdeleter.objects.PlayerPositionLookS2CPacketView;
 import io.github.coolmineman.cheaterdeleter.objects.entity.CDPlayer;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
@@ -17,10 +16,10 @@ public interface OutgoingTeleportListener {
     public static void init() {
         OutgoingPacketListener.EVENT.register((player, packet) -> {
             if (packet instanceof PlayerPositionLookS2CPacket) {
-                OutgoingTeleportListener.EVENT.invoker().onOutgoingTeleport(player, (PlayerPositionLookS2CPacketView)packet);
+                OutgoingTeleportListener.EVENT.invoker().onOutgoingTeleport(player, (PlayerPositionLookS2CPacket) packet);
             }
         });
     }
 
-    void onOutgoingTeleport(CDPlayer player, PlayerPositionLookS2CPacketView packet);
+    void onOutgoingTeleport(CDPlayer player, PlayerPositionLookS2CPacket packet);
 }

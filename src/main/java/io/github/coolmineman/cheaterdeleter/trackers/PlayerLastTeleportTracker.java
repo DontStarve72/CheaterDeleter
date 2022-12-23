@@ -1,9 +1,9 @@
 package io.github.coolmineman.cheaterdeleter.trackers;
 
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import org.jetbrains.annotations.NotNull;
 
 import io.github.coolmineman.cheaterdeleter.events.OutgoingTeleportListener;
-import io.github.coolmineman.cheaterdeleter.objects.PlayerPositionLookS2CPacketView;
 import io.github.coolmineman.cheaterdeleter.objects.entity.CDEntity;
 import io.github.coolmineman.cheaterdeleter.objects.entity.CDPlayer;
 import io.github.coolmineman.cheaterdeleter.trackers.data.PlayerLastTeleportData;
@@ -22,7 +22,7 @@ public class PlayerLastTeleportTracker extends Tracker<PlayerLastTeleportData> i
     }
 
     @Override
-    public void onOutgoingTeleport(CDPlayer player, PlayerPositionLookS2CPacketView packet) {
+    public void onOutgoingTeleport(CDPlayer player, PlayerPositionLookS2CPacket packet) {
         PlayerLastTeleportData data = get(player);
         data.lastTeleportX = packet.getX();
         data.lastTeleportY = packet.getY();

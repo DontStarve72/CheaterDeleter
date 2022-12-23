@@ -29,37 +29,44 @@ public class PlayerMoveTracker extends Tracker<PlayerMoveData> implements Packet
         return entity.getOrCreateData(PlayerMoveData.class, PlayerMoveData::new);
     }
 
-    @Override
     public ActionResult onPacket(CDPlayer player, Packet<ServerPlayPacketListener> packet) {
         PlayerMoveData teleportConfirmData = get(player);
+
         if (packet instanceof TeleportConfirmC2SPacket) {
             teleportConfirmData.teleportConfirmC2SPacket = (TeleportConfirmC2SPacket)packet;
-            if (teleportConfirmData.lastWasTeleportConfirm) player.kick(Text.literal("Illegal TeleportConfirmC2SPacket"));
+
+            if (teleportConfirmData.lastWasTeleportConfirm) {
+                player.kick(Text.literal("Illegal TeleportConfirmC2SPacket"));
+            }
+
             checkTeleportConfirmId(player, teleportConfirmData, teleportConfirmData.teleportConfirmC2SPacket.getTeleportId());
             teleportConfirmData.lastWasTeleportConfirm = true;
-        } else {
-            if (teleportConfirmData.lastWasTeleportConfirm) {
-                if (packet instanceof PlayerMoveC2SPacketView) {
-                    PlayerMoveC2SPacketView playerMoveC2SPacketView = (PlayerMoveC2SPacketView)packet;
-                    if (playerMoveC2SPacketView.isChangePosition() && playerMoveC2SPacketView.isChangeLook()) {
-                        TeleportConfirmListener.EVENT.invoker().onTeleportConfirm(player, teleportConfirmData.teleportConfirmC2SPacket, playerMoveC2SPacketView);
-                        PlayerMovementListener.EVENT.invoker().onMovement(player, playerMoveC2SPacketView, MoveCause.TELEPORT);
-                        player.setPacketPos(playerMoveC2SPacketView);
-                        teleportConfirmData.lastWasTeleportConfirm = false;
-                        return ActionResult.PASS;
-                    } else {
-                        player.kick(Text.literal("Expected PlayerMoveC2SPacket.Both After TeleportConfirmC2SPacket"));
-                    }
-                } else {
-                    player.kick(Text.literal("Expected PlayerMoveC2SPacket After TeleportConfirmC2SPacket"));
-                }
-            } else if (packet instanceof PlayerMoveC2SPacketView) {
-                PlayerMoveC2SPacketView playerMoveC2SPacketView = (PlayerMoveC2SPacketView)packet;
-                PlayerMovementListener.EVENT.invoker().onMovement(player, playerMoveC2SPacketView, MoveCause.OTHER);
-                player.setPacketPos(playerMoveC2SPacketView);
-            }
-            teleportConfirmData.lastWasTeleportConfirm = false;
+            return ActionResult.PASS;
         }
+
+        if (packet instanceof PlayerMoveC2SPacketView playerMoveC2SPacketView) {
+
+            if (teleportConfirmData.lastWasTeleportConfirm) {
+                teleportConfirmData.lastWasTeleportConfirm = false;
+
+                if (playerMoveC2SPacketView.isChangePosition() && playerMoveC2SPacketView.isChangeLook()) {
+                    TeleportConfirmListener.EVENT.invoker().onTeleportConfirm(player, teleportConfirmData.teleportConfirmC2SPacket, playerMoveC2SPacketView);
+                    PlayerMovementListener.EVENT.invoker().onMovement(player, playerMoveC2SPacketView, MoveCause.TELEPORT);
+                    player.setPacketPos(playerMoveC2SPacketView);
+                } else {
+                    player.kick(Text.literal("Expected PlayerMoveC2SPacket.Both After TeleportConfirmC2SPacket"));
+                }
+
+                return ActionResult.PASS;
+            }
+
+            PlayerMovementListener.EVENT.invoker().onMovement(player, playerMoveC2SPacketView, MoveCause.OTHER);
+            player.setPacketPos(playerMoveC2SPacketView);
+        } else if (teleportConfirmData.lastWasTeleportConfirm) {
+            player.kick(Text.literal("Expected PlayerMoveC2SPacket After TeleportConfirmC2SPacket"));
+        }
+
+        teleportConfirmData.lastWasTeleportConfirm = false;
         return ActionResult.PASS;
     }
     

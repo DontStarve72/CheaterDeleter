@@ -7,7 +7,6 @@
     "ClientConnectionMixin",
     "ServerPlayerEntityMixin",
     "PlayerMoveC2SPacketMixin",
-    "PlayerPositionLookS2CPacketMixin",
     "EntityPositionS2CPacketMixin",
     "EntityMixin",
     "AbstractHorseEntityMixin",

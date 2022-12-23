@@ -2,16 +2,17 @@ package io.github.coolmineman.cheaterdeleter.modules.movement;
 
 import java.util.Objects;
 
+import com.mojang.logging.LogUtils;
 import io.github.coolmineman.cheaterdeleter.events.OutgoingTeleportListener;
 import io.github.coolmineman.cheaterdeleter.events.TeleportConfirmListener;
 import io.github.coolmineman.cheaterdeleter.modules.CDModule;
 import io.github.coolmineman.cheaterdeleter.objects.PlayerMoveC2SPacketView;
-import io.github.coolmineman.cheaterdeleter.objects.PlayerPositionLookS2CPacketView;
 import io.github.coolmineman.cheaterdeleter.objects.entity.CDPlayer;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket.Flag;
 
 public class TeleportVerifierCheck extends CDModule implements TeleportConfirmListener, OutgoingTeleportListener {
@@ -34,40 +35,40 @@ public class TeleportVerifierCheck extends CDModule implements TeleportConfirmLi
         public final boolean exactY;
         public final boolean exactZ;
 
-        public TeleportInfo(CDPlayer player, PlayerPositionLookS2CPacketView view) {
-            if (view.getFlags().contains(Flag.X)) {
+        public TeleportInfo(CDPlayer player, PlayerPositionLookS2CPacket packet) {
+            if (packet.getFlags().contains(Flag.X)) {
                 exactX = false;
-                x = view.getX() + player.getX();
+                x = packet.getX() + player.getPacketX();
             } else {
                 exactX = true;
-                x = view.getX();
+                x = packet.getX();
             }
-            if (view.getFlags().contains(Flag.Y)) {
+            if (packet.getFlags().contains(Flag.Y)) {
                 exactY = false;
-                y = view.getY() + player.getY();
+                y = packet.getY() + player.getY();
             } else {
                 exactY = true;
-                y = view.getY();
+                y = packet.getY();
             }
-            if (view.getFlags().contains(Flag.Z)) {
+            if (packet.getFlags().contains(Flag.Z)) {
                 exactZ = false;
-                z = view.getZ() + player.getZ();
+                z = packet.getZ() + player.getZ();
             } else {
                 exactZ = true;
-                z = view.getZ();
+                z = packet.getZ();
             }
         }
     }
 
     @Override
-    public void onTeleportConfirm(CDPlayer player, TeleportConfirmC2SPacket teleportConfirmC2SPacket, PlayerMoveC2SPacketView playerMoveC2SPacketView) {
-        TeleportInfo teleport = player.getData(TeleportVerifierCheckData.class).teleports.get(teleportConfirmC2SPacket.getTeleportId());
-        player.getData(TeleportVerifierCheckData.class).teleports.remove(teleportConfirmC2SPacket.getTeleportId());
+    public void onTeleportConfirm(CDPlayer player, TeleportConfirmC2SPacket teleportPacket, PlayerMoveC2SPacketView movePacket) {
+        TeleportInfo teleport = player.getData(TeleportVerifierCheckData.class).teleports.get(teleportPacket.getTeleportId());
+        player.getData(TeleportVerifierCheckData.class).teleports.remove(teleportPacket.getTeleportId());
         if (enabledFor(player)) {
             Objects.requireNonNull(teleport, "If this is null and player is not cheating you should panic");
-            assertAxis(player, "x", teleport.exactX, playerMoveC2SPacketView.getX(), teleport.x);
-            assertAxis(player, "y", teleport.exactY, playerMoveC2SPacketView.getY(), teleport.y);
-            assertAxis(player, "z", teleport.exactZ, playerMoveC2SPacketView.getZ(), teleport.z);
+            assertAxis(player, "x", teleport.exactX, movePacket.getX(), teleport.x);
+            assertAxis(player, "y", teleport.exactY, movePacket.getY(), teleport.y);
+            assertAxis(player, "z", teleport.exactZ, movePacket.getZ(), teleport.z);
         }
     }
 
@@ -80,7 +81,7 @@ public class TeleportVerifierCheck extends CDModule implements TeleportConfirmLi
     }
 
     @Override
-    public void onOutgoingTeleport(CDPlayer player, PlayerPositionLookS2CPacketView packet) {
+    public void onOutgoingTeleport(CDPlayer player, PlayerPositionLookS2CPacket packet) {
         TeleportVerifierCheckData data = player.getOrCreateData(TeleportVerifierCheckData.class, TeleportVerifierCheckData::new);
         data.teleports.put(packet.getTeleportId(), new TeleportInfo(player, packet));
     }
