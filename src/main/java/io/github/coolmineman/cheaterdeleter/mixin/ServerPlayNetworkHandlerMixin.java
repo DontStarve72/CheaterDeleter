@@ -32,23 +32,4 @@ public class ServerPlayNetworkHandlerMixin {
             cb.cancel();
         } 
     }
-
-    // Change all vanilla fall damage logic to use our manual onGround check
-    // No reason to trust the client when dealing fall damage
-    @Inject(method = "onPlayerMove", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;updatePositionAndAngles(DDDFF)V", ordinal = 1, shift = At.Shift.AFTER))
-    private void testOnGround(CallbackInfo info) {
-        CDPlayer cdPlayer = CDPlayer.of(player);
-        Box playerBox = cdPlayer.getBoxForPosition(cdPlayer.getPacketX(), cdPlayer.getPacketY(), cdPlayer.getPacketZ()).expand(0.4);
-        isTouching = CollisionUtil.isTouching(cdPlayer, playerBox, cdPlayer.getWorld(), CollisionUtil.touchingRigidTopPredicates(playerBox));
-    }
-
-    @ModifyArg(method = "onPlayerMove", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;handleFall(DZ)V"), index = 1)
-    private boolean handleFall(boolean packetOnGround) {
-        return isTouching;
-    }
-
-    @ModifyArg(method = "onPlayerMove", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;setOnGround(Z)V"), index = 0)
-    private boolean setOnGround(boolean packetOnGround) {
-        return isTouching;
-    }
 }

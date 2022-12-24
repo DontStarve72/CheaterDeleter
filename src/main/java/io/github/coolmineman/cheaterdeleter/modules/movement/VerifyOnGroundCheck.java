@@ -23,7 +23,7 @@ public class VerifyOnGroundCheck extends CDModule implements PlayerMovementListe
             if (packet.isOnGround()) {
                 Box playerBox = player.getBoxForPosition(packet.getX(), packet.getY(), packet.getZ()).expand(0.6); //Fences
                 // Not having a smaller feetbox shouldn't matter unless head is in a block lol
-                if (assertOrFlag(CollisionUtil.isTouching(player, playerBox, player.getWorld(), CollisionUtil.touchingRigidTopPredicates(playerBox)), player, FlagSeverity.MINOR, "Spoofed onGround true")) player.rollback();
+                if (assertOrFlag(CollisionUtil.isTouching(player, playerBox, player.getWorld(), CollisionUtil.touchingRigidTopPredicates(playerBox)), player, FlagSeverity.MINOR, "Spoofed onGround true")) player.rollbackAndGround();
             }
         } else if (packet.isOnGround() && !player.isOnGround()) {
             Box playerBox = player.getBoxForPosition(player.getPacketX(), player.getPacketY(), player.getPacketZ()).expand(0.4); //Should be liberal enough

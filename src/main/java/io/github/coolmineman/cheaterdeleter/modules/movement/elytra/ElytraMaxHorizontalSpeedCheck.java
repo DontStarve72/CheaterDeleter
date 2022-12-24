@@ -32,7 +32,7 @@ public class ElytraMaxHorizontalSpeedCheck extends CDModule implements PlayerMov
         data.move += distance;
         if (System.currentTimeMillis() - data.starttime > 2500) {
             if (data.move >= 150 && flag(player, FlagSeverity.MINOR, "Elytra Move Too High: " + data.move)) {
-                player.groundRollback();
+                player.rollbackAndGround();
             }
             data.starttime = System.currentTimeMillis();
             data.move = 0.0;

@@ -25,7 +25,6 @@ import net.minecraft.server.BannedPlayerList;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 
 public interface CDPlayer extends CDEntity {
 
@@ -107,19 +106,28 @@ public interface CDPlayer extends CDEntity {
     default void tickRollback(double x, double y, double z, boolean isTeleport) {
         CDPlayerEx ex = getData(CDPlayerEx.class);
         if (System.currentTimeMillis() - ex.lastFlag > 5000 || isTeleport || !ex.hasLastGood) {
-            ex.lastGoodX = x;
-            ex.lastGoodY = y;
-            ex.lastGoodZ = z;
-            ex.hasLastGood = true;
+            // Never let last good coordinates be in midair
+            if (isOnGround()) {
+                ex.lastGoodX = x;
+                ex.lastGoodY = y;
+                ex.lastGoodZ = z;
+                ex.hasLastGood = true;
+            }
         }
     }
 
-    default void groundRollback() {
-        CDPlayerEx ex = getData(CDPlayerEx.class);
-        Box box = BoxUtil.withNewMinY(this.getBoxForPosition(ex.lastGoodX, this.getY(), ex.lastGoodZ), 0);
-        World world = this.getWorld();
-        double newY = BlockPos.stream(box).mapToDouble(pos -> BlockCollisionUtil.getHighestTopIntersection(world.getBlockState(pos).getCollisionShape(world, pos).offset(pos.getX(), pos.getY(), pos.getZ()), box, -100)).max().orElse(-100);
-        this.teleportCd(ex.lastGoodX, newY, ex.lastGoodZ);
+    // TODO: Leaving this here for now to see if it's a good implementation
+    default void rollbackAndGround() {
+//        CDPlayerEx ex = getData(CDPlayerEx.class);
+//        Box box = BoxUtil.withNewMinY(this.getBoxForPosition(ex.lastGoodX, this.getY(), ex.lastGoodZ), 0);
+//        World world = this.getWorld();
+//        // Calculate newY because lastGoodY might be in the air
+//        double newY = BlockPos.stream(box).mapToDouble(pos -> BlockCollisionUtil.getHighestTopIntersection(world.getBlockState(pos).getCollisionShape(world, pos).offset(pos.getX(), pos.getY(), pos.getZ()), box, -100)).max().orElse(-100);
+//        // Deal fall damage - Is this how you're supposed to do this?
+//        asMcPlayer().fallDistance = (float) (this.getPacketY() - newY);
+//        asMcPlayer().handleFall(0, true);
+//        this.teleportCd(ex.lastGoodX, newY, ex.lastGoodZ);
+        rollback();
     }
 
     default void groundBoat(CDEntity entity) {

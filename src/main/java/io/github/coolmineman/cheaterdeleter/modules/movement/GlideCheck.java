@@ -53,7 +53,7 @@ public class GlideCheck extends CDModule implements PlayerMovementListener, Play
             flag(player, FlagSeverity.MINOR, "Failed Glide Check (Minor) " + failamount);
         } else {
             // if (flag(player, FlagSeverity.MAJOR, "Failed Glide Check " + failamount)) PunishUtil.groundPlayer(player);
-            if (flag(player, FlagSeverity.MAJOR, "Failed Glide Check " + failamount)) player.groundRollback();
+            if (flag(player, FlagSeverity.MAJOR, "Failed Glide Check " + failamount)) player.rollbackAndGround();
         }
     }
 

@@ -40,7 +40,7 @@ public class ElytraMoveCapCheck extends CDModule implements ClientCommandC2SPack
             } else if (packet.isChangePosition() && data.isActive) {
                 if (packet.getY() > data.yCap) {
                     flag(player, FlagSeverity.MINOR, "Elytra Too High " + (packet.getY() - data.yCap));
-                    player.groundRollback();
+                    player.rollbackAndGround();
                 } else if (System.currentTimeMillis() - data.lastUpdate >= 1000) {
                     data.yCap -= 1.5;
                     data.lastUpdate = System.currentTimeMillis();
